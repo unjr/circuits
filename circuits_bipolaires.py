@@ -9,18 +9,18 @@ import numpy as np
 from matplotlib.pyplot import *
 from math import *
 
-class CircuitBipolaire():
-    def __init__(self,impedance):
+class CircuitBipolaire():           # un objet de la classe CircuitBipolaire
+    def __init__(self,impedance):   # est muni de la grandeur "impédance"
         self.impedance = impedance
         
     def __repr__(self):
         return str(self.impedance)
 
-class CircuitElementaire(CircuitBipolaire):
-    def __init__(self,impedance):
-        CircuitBipolaire.__init__(self,impedance)
-    
-    def __add__(self, autre_circuit):
+class CircuitElementaire(CircuitBipolaire):         # un circuit élémentaire hérite
+    def __init__(self,impedance):                   # du circuit bipolaire et peut
+        CircuitBipolaire.__init__(self,impedance)   # être placé en série (méthode add)
+                                                    # ou en parallèle (méthode or),
+    def __add__(self, autre_circuit):               # chaque méthode calcule l'impédance équivalente
         impedance_totale = self.impedance + autre_circuit.impedance
         circuit_serie = CircuitElementaire(impedance_totale)
         return circuit_serie
@@ -30,10 +30,12 @@ class CircuitElementaire(CircuitBipolaire):
         circuit_parallele = CircuitElementaire(impedance_totale)
         return circuit_parallele
     
-class Composant(CircuitElementaire,list):
-    def __init__(self,impedance):
-        CircuitElementaire.__init__(self,impedance)
+class Composant(CircuitElementaire,list):           # on définit une classe Composant
+    def __init__(self,impedance):                   # même si ça n'apporte pas grand chose pour
+        CircuitElementaire.__init__(self,impedance) # l'instant
         
+# On définit ensuite une classe par type de composant
+# pour lesquelles, on définit les impédances correspondantes
 class Resistance(Composant):
     def __init__(self,R):
         Composant.__init__(self,R)
@@ -46,42 +48,18 @@ class Capacite(Composant):
     def __init__(self,C,w):
         Composant.__init__(self,1/(1j*C*w))
         
-        
-        
-        
-        
-        
-        
-        
-class Circuit(list):
-    def __init__(self,nb_noeuds):
-        self.nb_noeuds = nb_noeuds
-
-class Noeud(list):
-    def __init__(self,nb_branches, potentiel=0):
-        self.nb_branches = nb_branches
-        self.potentiel = potentiel
-        
-E=1
-noeud1 = Noeud(1,E); noeud1.potentiel = E;
-noeud2 = Noeud(4)
-noeud3 = Noeud(2)
-noeud4 = Noeud(3)
-noeud5 = Noeud(2)
-noeud6 = Noeud(1,0)
-noeud7 = Noeud(1,0)
-
-R1 = Resistance(1); R1.append(noeud1, noeud2)
-R2 = Resistance(1); R2.append(noeud2, noeud3)
-R3 = Resistance(1); R3.append(noeud4, noeud5)
-C1 = Capacite(1e-6); C1.append(noeud2, noeud7)
-C2 = Capacite(1e-6); C2.append(noeud2, noeud4)
-C3 = Capacite(1e-6); C3.append(noeud5, noeud6)
-L1 = Inductance(1e-6); L1.append(noeud3, noeud4)
 
 
+#### TEST ###
+f = 1; w = 2*pi*f
 
-circuit = Circuit(7)
 R1 = Resistance(1)
-R2 = Resistance(2)
+R2 = Resistance(1)
+C1 = Capacite(1,w)
+C2 = Capacite(1,w)
+L1 = Inductance(1,w) 
+
+circuit_final = ((R1 + (L1 | C1)) | C2) + R2
+
+print(circuit_final)
 
