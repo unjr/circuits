@@ -59,7 +59,7 @@ class Parallele(CircuitBipolaire):
 
 # On définit ensuite une classe par type de composant
 # pour lesquelles, on définit les impédances correspondantes
-class Resistance(Composant):
+class Resistance(CircuitBipolaire):
     def get_impedance(self,omega):
         return self.valeur
 
@@ -74,7 +74,7 @@ class Resistance(Composant):
         text(x0+length/2-0.1,y0,self.valeur)
         return x0+length,y0+height/2
 
-class Inductance(Composant):
+class Inductance(CircuitBipolaire):
     def get_impedance(self,omega):
         if isinstance(self.valeur,sp.Symbol):
             return self.valeur*sp.I*omega
@@ -89,7 +89,7 @@ class Inductance(Composant):
         plot([x0+length*3/4,x0+length],[y0,y0],'k')
         return x0+length,y0+height/2
     
-class Capacite(Composant):
+class Capacite(CircuitBipolaire):
     def get_impedance(self,omega):
         if isinstance(self.valeur,sp.Symbol):
             return 1/(self.valeur*sp.I*omega)
@@ -115,3 +115,5 @@ C2 = Capacite('C_2')
 L1 = Inductance('L_1') 
 
 circuit_final = ((R1+(C1|L1))|C2) + R2; circuit_final.trace(0,0)
+circuit_final.get_impedance(omega)
+sp.simplify()
