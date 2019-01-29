@@ -103,17 +103,3 @@ class Capacite(CircuitBipolaire):
         plot([x0+length*2/3,x0+length*2/3],[y0-height/2,y0+height/2],'k')
         plot([x0+length*2/3,x0+length],[y0,y0],'k')
         return x0+length,y0+height/2
-        
-
-#### TEST ###
-f = 1; omega = sp.Symbol('omega') #omega = 2*pi*f
-
-R1 = Resistance('R_1')
-R2 = Resistance('R_2')
-C1 = Capacite('C_1')
-C2 = Capacite('C_2')
-L1 = Inductance('L_1') 
-
-circuit_final = ((R1+(C1|L1))|C2) + R2; circuit_final.trace(0,0)
-circuit_final.get_impedance(omega)
-sp.simplify()
