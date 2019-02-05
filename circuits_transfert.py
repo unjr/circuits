@@ -4,10 +4,6 @@ Created on Tue Jan  8 18:50:22 2019
 
 @author: Ulysse
 """
-
-import numpy as np
-from matplotlib.pyplot import *
-from math import *
 import sympy as sp
 sp.init_printing()
 
@@ -71,7 +67,7 @@ class Noeud():
     def _connect(self,composant,patte):
         self.composants.append((composant,patte))
     
-    def _millman(self):
+    def millman(self):
         somme = 0
         for composant,patte in self.composants:
             somme += composant.get_current(patte)
@@ -86,17 +82,16 @@ class Circuit():
     def check_circuit(self):
         pass    
     
-    def millman(self):
+    def systeme(self):
         liste_equations = []
         for noeud in self.liste_noeuds:
             if noeud.alim is False:
-                liste_equations.append(noeud._millman())
+                liste_equations.append(noeud.millman())
         return liste_equations
     
     def solve(self, inconnue=None):
-        systeme = self.millman()
         inconnues = tuple([noeud.potentiel for noeud in self.liste_noeuds if noeud.alim == False])
-        sol = sp.solve(systeme,inconnues)
+        sol = sp.solve(self.systeme(),inconnues)
         if inconnue == None:
             return sol
         else:
