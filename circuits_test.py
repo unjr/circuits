@@ -14,7 +14,7 @@ C1 = Capacite('C_1')
 C2 = Capacite('C_2')
 L1 = Inductance('L_1') 
 
-circuit_final = ((R1+(C1|L1))|C2) + R2; circuit_final.trace(0,0)
+circuit_final = ((R1+(C1|L1))|C2) + R2; circuit_final.trace()
 circuit_final.get_impedance(omega)
 #sp.simplify()
 

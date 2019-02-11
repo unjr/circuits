@@ -7,7 +7,7 @@ Created on Tue Jan  8 18:50:22 2019
 
 import numpy as np
 from matplotlib.pyplot import *
-from math import *
+#from math import *
 import sympy as sp
 sp.init_printing()
 
@@ -27,6 +27,13 @@ class CircuitBipolaire():
     def __or__(self, autre_circuit):
         circuit_parallele = Parallele(self,autre_circuit)
         return circuit_parallele
+    
+    def trace(self):
+        self._trace(0,0)
+        ax = gca()
+        ax.set_aspect('equal')
+        #rc('text', usetex=True)
+
 
 class Serie(CircuitBipolaire):
     def __init__(self,circuit1,circuit2):
@@ -36,9 +43,9 @@ class Serie(CircuitBipolaire):
     def get_impedance(self,omega):
         return self.circuit1.get_impedance(omega)+self.circuit2.get_impedance(omega)
     
-    def trace(self,x0,y0):
-        xf1,yf1 = self.circuit1.trace(x0,y0)
-        xf2,yf2 = self.circuit2.trace(xf1,y0)
+    def _trace(self,x0,y0):
+        xf1,yf1 = self.circuit1._trace(x0,y0)
+        xf2,yf2 = self.circuit2._trace(xf1,y0)
         return xf2,yf2
 
 class Parallele(CircuitBipolaire):
@@ -49,9 +56,9 @@ class Parallele(CircuitBipolaire):
     def get_impedance(self,omega):
         return (self.circuit1.get_impedance(omega) * self.circuit2.get_impedance(omega))/(self.circuit1.get_impedance(omega) + self.circuit2.get_impedance(omega))
     
-    def trace(self,x0,y0):
-        xf1,yf1 = self.circuit1.trace(x0,y0)
-        xf2,yf2 = self.circuit2.trace(x0,yf1+0.5)
+    def _trace(self,x0,y0):
+        xf1,yf1 = self.circuit1._trace(x0,y0)
+        xf2,yf2 = self.circuit2._trace(x0,yf1+0.5)
         plot([x0,x0],[y0,yf1+0.5],'k')
         plot([xf1,xf1],[y0,yf1+0.5],'k')
         plot([xf1,xf2],[yf1+0.5,yf1+0.5],'k')
@@ -63,8 +70,8 @@ class Resistance(CircuitBipolaire):
     def get_impedance(self,omega):
         return self.valeur
 
-    def trace(self,x0,y0): 
-        length=1; height=0.5
+    def _trace(self,x0,y0): 
+        length=1; height=0.25
         plot([x0,x0+length/4],[y0,y0],'k')
         plot([x0+length/4,x0+length*3/4],[y0-height/2,y0-height/2],'k')
         plot([x0+length/4,x0+length*3/4],[y0+height/2,y0+height/2],'k')
@@ -81,12 +88,13 @@ class Inductance(CircuitBipolaire):
         else:
             return self.valeur*1j*omega
         
-    def trace(self,x0,y0): 
-        length=1; height=0.5; xlin = np.linspace(x0+length/4,x0+length*3/4,200)
+    def _trace(self,x0,y0): 
+        length=1; height=0.3; xlin = np.linspace(x0+length/4,x0+length*3/4,200)
         plot([x0,x0+length/4],[y0,y0],'k')
         plot(xlin,y0+np.sin(xlin*(20*np.pi)+np.pi)*height/2,'k')
         plot(xlin,y0+np.sin(xlin*(20*np.pi))*height/2,'k')
         plot([x0+length*3/4,x0+length],[y0,y0],'k')
+        text(x0+0.05*length,y0+0.15*height,self.valeur)
         return x0+length,y0+height/2
     
 class Capacite(CircuitBipolaire):
@@ -96,10 +104,11 @@ class Capacite(CircuitBipolaire):
         else:
             return 1/(self.valeur*1j*omega)
     
-    def trace(self,x0,y0): 
+    def _trace(self,x0,y0): 
         length=1; height=0.5
-        plot([x0,x0+length/3],[y0,y0],'k')
-        plot([x0+length/3,x0+length/3],[y0-height/2,y0+height/2],'k')
-        plot([x0+length*2/3,x0+length*2/3],[y0-height/2,y0+height/2],'k')
-        plot([x0+length*2/3,x0+length],[y0,y0],'k')
+        plot([x0,x0+length/3+length/8],[y0,y0],'k')
+        plot([x0+length/3+length/8,x0+length/3+length/8],[y0-height/2,y0+height/2],'k')
+        plot([x0+length*2/3-length/8,x0+length*2/3-length/8],[y0-height/2,y0+height/2],'k')
+        plot([x0+length*2/3-length/8,x0+length],[y0,y0],'k')
+        text(x0+0.2*length,y0+0.15*height,self.valeur)
         return x0+length,y0+height/2
